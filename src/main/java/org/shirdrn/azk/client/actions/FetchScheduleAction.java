@@ -45,9 +45,14 @@ public class FetchScheduleAction extends AbstractAction {
                         String res = response.body().string();
                         JSONObject j = JSONObject.parseObject(res);
                         logResponse(LOG, res);
-                        String scheduleId = j.getJSONObject("schedule").getString("scheduleId");
-                        LOG.info("Schedule fetched: scheduleId=" + scheduleId);
-                        scheduleIds.add(scheduleId);
+                        JSONObject jsonSchedule = j.getJSONObject("schedule");
+                        // A scheduleId for delete actions are not present!
+						if (jsonSchedule != null) { // prevent for NPE by delete actions
+							String scheduleId = jsonSchedule.getString("scheduleId");
+							LOG.info("Schedule fetched: scheduleId=" + scheduleId);
+							scheduleIds.add(scheduleId);
+						}
+                        
                     }
                 } catch (IOException e) {
                     Throwables.propagate(e);
